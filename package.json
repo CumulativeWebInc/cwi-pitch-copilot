@@ -1,0 +1,1 @@
+{"bin":{"pitch-copilot":"./pitch-copilot.js"},"description":"Curator outreach copilot for CWI Radio & Playlists: drafts playlist pitches with verified claims embedded. Drafts only — never sends.","license":"UNLICENSED","main":"pitch-copilot.js","name":"cwi-pitch-copilot","scripts":{"test":"node test/test.js"},"version":"1.0.0"}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CWI Pitch Copilot — Curator Outreach Copilot</title>
+<style>
+:root{--bg:#0b0e14;--fg:#e8eaf0;--mut:#9aa3b2;--acc:#7dd3fc;--warn:#fbbf24;--ok:#4ade80;--card:#141926}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:2rem;margin:.2em 0}h2{margin-top:2.2em;border-bottom:1px solid #26304a;padding-bottom:.4em}
+.badge{display:inline-block;background:#1c2438;border:1px solid #2c3854;border-radius:999px;padding:.3em 1em;font-size:.85rem;color:var(--acc);margin-right:.5em}
+.card{background:var(--card);border:1px solid #232c47;border-radius:12px;padding:18px 20px;margin:1em 0}
+code{background:#1c2438;padding:.15em .45em;border-radius:6px;font-size:.9em}
+pre{background:#0e1320;border:1px solid #232c47;border-radius:12px;padding:16px;overflow-x:auto}
+pre code{background:none;padding:0}
+.tier1{color:var(--ok)}.tier2{color:var(--acc)}.tier3{color:var(--warn)}
+.warn{background:#2a2113;border:1px solid #5b4517;border-radius:12px;padding:16px 20px;margin:1em 0}
+.ok{background:#10231a;border:1px solid #1e4d2e;border-radius:12px;padding:16px 20px;margin:1em 0}
+table{width:100%;border-collapse:collapse;margin:1em 0}th,td{text-align:left;padding:.6em .8em;border-bottom:1px solid #232c47}th{color:var(--mut);font-weight:600}
+footer{margin-top:3em;color:var(--mut);font-size:.85rem}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🎯 CWI Pitch Copilot</h1>
+<p><span class="badge">Radio &amp; Playlists dept</span> <span class="badge">Drafts only — never sends</span></p>
+
+<p>The curator outreach copilot drafts playlist pitches with <strong>verified claims embedded</strong> — placement history, evidence tiers, and rights/clearance references pulled live from the CWI catalog API and the placement wall. <strong>A human approves every outbound pitch.</strong></p>
+
+<div class="warn">
+<strong>⛔ Exact-copy gate.</strong> Anything sent in Black's personal name, or a DM sent as Black, requires Black's explicit exact-copy approval of the final text — every draft carries this checklist. The tool drafts only; it never sends, posts, or DMs. Personal Facebook is read-only. No subscriber blasts. This is a standing hard line and it is written into the tool, not just this page.
+</div>
+
+<h2>Usage</h2>
+<pre><code># Draft a pitch (writes draft.md, appends a receipt line to receipts.jsonl)
+node pitch-copilot.js draft \
+  --to-curator "Marcus Hale" \
+  --to-playlist "Underground Rap Weekly" \
+  --track "Zooted Zone" \
+  --note "Optional context from the department" \
+  --out draft.md --log receipts.jsonl
+
+# Check a claim before quoting it anywhere
+node pitch-copilot.js check --claim "Zooted Zone holds #30 on New Rap Hits" --track "Zooted Zone"
+
+# Probe the gate adversarially — invented placements are refused
+node pitch-copilot.js adversarial "Zooted Zone is #1 on Spotify Global"
+
+# List verified claims for a track
+node pitch-copilot.js list --track "Shaka Zulu"</code></pre>
+
+<div class="card">
+<code>--fixture</code> pins the local fixture snapshot (used by tests and examples, deterministic). Without it the tool reads the <strong>live APIs</strong> — every question gets a fresh answer.
+</div>
+
+<h2>Evidence tiers</h2>
+<table>
+<tr><th>Tier</th><th>Meaning</th><th>Example</th></tr>
+<tr><td class="tier1">TIER 1 — SCAN-VERIFIED</td><td>Full playlist scans; carries position snapshot, <code>verified_at</code>, proof URL</td><td>“Zooted Zone holds #30 of 140 on New Rap Hits (Audiartist)”</td></tr>
+<tr><td class="tier2">TIER 2 — DASHBOARD-VERIFIED</td><td>Distributor-dashboard facts from catalog.json</td><td>ISRC QZDA52303345</td></tr>
+<tr><td class="tier3">TIER 3 — PUBLIC-SOURCE</td><td>Third-party sourced, <strong>not</strong> distributor-confirmed — flagged, never quoted as verified</td><td>Deezer-sourced ISRCs</td></tr>
+</table>
+
+<p>Positions are always stated as snapshots with their verification date. <strong>A submission is not a placement; a promise is not a placement.</strong> Claims that can't be resolved against verified records are <strong>refused, never guessed</strong>.</p>
+
+<h2>Approval workflow</h2>
+<ol>
+<li><strong>Draft</strong> — <code>pitch-copilot.js draft</code> generates the pitch from verified data + appends the mandatory HUMAN-APPROVAL checklist.</li>
+<li><strong>Human review</strong> — a person reads every word, owns the final wording, checks claims stay within their tiers.</li>
+<li><strong>Gate check</strong> — if the pitch goes out under Black's personal name or as a DM in his name → <strong>Black's exact-copy approval first</strong>. No exceptions.</li>
+<li><strong>Human sends</strong> — the sender is the human of record; the tool is never the sender. Official contact: <code>hp@cumulativeweb.com</code>.</li>
+<li><strong>Receipts</strong> — drafts logged to <code>receipts.jsonl</code>; sends logged by the human sender.</li>
+</ol>
+
+<h2>Trial terms</h2>
+<div class="card">
+<strong>Trial owner:</strong> <code>agent:CWI_Radio</code> (Radio &amp; Playlists department)<br>
+<strong>Terms:</strong> 30-day trial with receipts — count drafts + sends.<br>
+<strong>Measurement:</strong> pitches drafted AND sent with embedded claims; reply rate vs. baseline once data exists.<br>
+<strong>Kill rule:</strong> <strong>&lt;10 pitches sent with embedded claims in 60 days → kill the lane.</strong><br>
+<strong>Checkpoints:</strong> 50% (2026-10-04) and 75% (2026-10-19) of the window — diagnose the gap, change the actions, re-execute.<br>
+Full record: <code>KILL-RULE-LOG.md</code> in the repo.
+</div>
+
+<div class="ok">
+<strong>✅ Truth rules.</strong> Never inflate positions, follower counts, streams, placements, or rights. Verified or it didn't happen. Zero is an internal kill signal — the trial is honest about it.
+</div>
+
+<h2>Resources</h2>
+<ul>
+<li><a href="https://github.com/CumulativeWebInc/cwi-pitch-copilot">GitHub repo</a> (README, tests, worked examples)</li>
+<li><a href="https://cumulativewebinc.github.io/cwi-placement-wall/placements.json">Placement wall — placements.json</a> (live verified data)</li>
+<li><a href="https://cumulativewebinc.github.io/cwi-learn/catalog.json">Catalog API — catalog.json</a></li>
+</ul>
+
+<footer>CWI Pitch Copilot v1.0.0 · zero dependencies · built 2026-09-19 for Cumulative Web Inc</footer>
+</div>
+</body>
+</html>
